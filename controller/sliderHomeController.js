@@ -14,7 +14,7 @@ module.exports = {
             let { img_slider } = req.files
             
             // Use the mv() method to place the file in upload directory (i.e. "uploads")
-            img_slider.mv('./public/images/slider/' + img_slider.name)
+            img_slider.mv('./public/images/sliders/' + img_slider.name)
             const slider = new Slider ({
                 nm_slider: req.body.nm_slider,
                 img_slider: img_slider.name,
@@ -53,7 +53,7 @@ module.exports = {
             } else {
                 if (req.files) {
                     let { img_slider } = req.files
-                    let path = `./public/images/slider/${img_slider.name}`
+                    let path = `./public/images/sliders/${img_slider.name}`
                     clearImage(sliderHome.img_slider)
 
                     img_slider.mv(path, async (err) => {
@@ -117,7 +117,7 @@ module.exports = {
 }
 
 const clearImage = filePath => {
-    filePath = path.join(__dirname, '../public/images/slider/', filePath)
+    filePath = path.join(__dirname, '../public/images/sliders/', filePath)
     fs.unlink(filePath, err => {
         if (err) throw err
     })
