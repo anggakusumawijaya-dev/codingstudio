@@ -2,11 +2,18 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 const sliderHome = new Schema({
-    nm_slider: String,
-    img_slider: String,
+    nm_slider: {
+        type: String,
+        required: true
+    },
+    img_slider: {
+        type: String,
+        required: true
+    },
     status_slider: {
         type: Boolean,
-        default: true
+        default: true,
+        required: true
     }
 }, {
     timestamps: true

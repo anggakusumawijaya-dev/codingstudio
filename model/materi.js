@@ -2,13 +2,26 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 const materi = new Schema ({
-    nm_materi: String,
-    img_materi: String,
-    hrg_materi: Number,
-    desc_materi: String,
+    nm_materi: {
+        type: String,
+        required: true
+    },
+    img_materi: {
+        type: String,
+        required: true
+    },
+    hrg_materi: {
+        type: Number,
+        required: true
+    },
+    desc_materi: {
+        type: String,
+        required: true
+    },
     status_materi: {
         type: Boolean,
-        default: true
+        default: true,
+        required: true
     }
 }, {
     timestamps: true

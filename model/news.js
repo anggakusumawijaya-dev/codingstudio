@@ -1,16 +1,24 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 
-const modalPromoHome = new Schema ({
-    nm_promo: {
+const News = new Schema ({
+    nm_news: {
         type: String,
         required: true
     },
-    img_promo: {
+    img_news: {
         type: String,
         required: true
     },
-    status_promo: {
+    desc_news: {
+        type: String,
+        required: true
+    },
+    author: {
+        type: String,
+        required: true
+    },
+    status_news: {
         type: Boolean,
         default: true,
         required: true
@@ -18,5 +26,3 @@ const modalPromoHome = new Schema ({
 }, {
     timestamps: true
 })
-
-module.exports = mongoose.model('ModalPromo', modalPromoHome)
