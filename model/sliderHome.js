@@ -3,17 +3,14 @@ const { Schema } = mongoose
 
 const sliderHome = new Schema({
     nm_slider: {
-        type: String,
-        required: true
+        type: String
     },
     img_slider: {
-        type: String,
-        required: true
+        type: String
     },
     status_slider: {
         type: Boolean,
-        default: true,
-        required: true
+        default: true
     }
 }, {
     timestamps: true
