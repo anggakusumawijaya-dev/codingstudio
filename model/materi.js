@@ -3,25 +3,20 @@ const { Schema } = mongoose
 
 const materi = new Schema ({
     nm_materi: {
-        type: String,
-        required: true
+        type: String
     },
     img_materi: {
-        type: String,
-        required: true
+        type: String
     },
     hrg_materi: {
-        type: Number,
-        required: true
+        type: Number
     },
     desc_materi: {
-        type: String,
-        required: true
+        type: String
     },
     status_materi: {
         type: Boolean,
-        default: true,
-        required: true
+        default: true
     }
 }, {
     timestamps: true

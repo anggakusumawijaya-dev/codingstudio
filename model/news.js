@@ -3,25 +3,20 @@ const { Schema } = mongoose
 
 const News = new Schema ({
     nm_news: {
-        type: String,
-        required: true
+        type: String
     },
     img_news: {
-        type: String,
-        required: true
+        type: String
     },
     desc_news: {
-        type: String,
-        required: true
+        type: String
     },
     author: {
-        type: String,
-        required: true
+        type: String
     },
     status_news: {
         type: Boolean,
-        default: true,
-        required: true
+        default: true
     }
 }, {
     timestamps: true

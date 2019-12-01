@@ -4,30 +4,24 @@ const { Schema } = mongoose
 const formPromoHome = new Schema({
     id_promo: {
         type: Schema.Types.ObjectId,
-        ref: 'ModalPromo',
-        required: true
+        ref: 'ModalPromo'
     },
     nm_calon: {
-        type: String,
-        required: true
+        type: String
     },
     email_calon: {
-        type: String,
-        required: true
+        type: String
     },
     no_telp_calon: {
-        type: String,
-        required: true
+        type: String
     },
     id_materi: {
         type: Schema.Types.ObjectId,
-        ref: 'Materi',
-        required: true
+        ref: 'Materi'
     },
     status: {
         type: Boolean,
-        default: true,
-        required: true
+        default: true
     }
 }, {
     timestamps: true

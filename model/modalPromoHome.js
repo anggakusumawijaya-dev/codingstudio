@@ -3,17 +3,14 @@ const { Schema } = mongoose
 
 const modalPromoHome = new Schema ({
     nm_promo: {
-        type: String,
-        required: true
+        type: String
     },
     img_promo: {
-        type: String,
-        required: true
+        type: String
     },
     status_promo: {
         type: Boolean,
-        default: true,
-        required: true
+        default: true
     }
 }, {
     timestamps: true
