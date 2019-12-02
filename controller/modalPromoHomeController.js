@@ -61,20 +61,28 @@ module.exports = {
                                 status_promo: req.body.status_promo
                             }
                             const updatedModalPromo = await ModalPromo.updateOne({_id: id}, updModalPromo)
-                            res.send({
-                                status: 200,
-                                message: 'File is updated'
-                            })
                         }
                     })
                 } else {
-                    const updatedModalPromo = await ModalPromo.updateOne({_id: id}, req.body)
-                    res.send({
-                        status: 200,
-                        message: 'File is updated'
-                    })
+                    const updModalPromo = {
+                        nm_promo: req.body.nm_promo,
+                        status_promo: req.body.status_promo
+                    }
+                    const updatedModalPromo = await ModalPromo.updateOne({_id: id}, updModalPromo)
                 }
             }
+        })
+        .then(result => {
+            res.json({
+                status: 200,
+                message: 'File is updated'
+            })
+        })
+        .catch(err => {
+            res.json({
+                status: 400,
+                error: 'Failed to update file'
+            })
         })
     },
     deleteModalPromo: async (req, res) => {
@@ -82,31 +90,35 @@ module.exports = {
         ModalPromo.findById(id)
         .then( async modalPromoHome => {
             if(!modalPromoHome) {
-                res.status(200)
-                .json({ error: 'File tidak di temukan'})
+                res.json({ 
+                    status: 404,
+                    error: 'Not Found'
+                })
             } else {
                 clearImage(modalPromoHome.img_promo)
                 const deletedModalPromo = await ModalPromo.findByIdAndRemove(id)
             }
         })
         .then(result => {
-            res.send({
+            res.json({
                 status: 200,
                 error: null,
                 message: 'File is deleted'
             })
         })
         .catch(err => {
-            res.status(200)
-            .json({ error: 'Failed to delete file'})
+            res.json({
+                status: 400,
+                error: 'Failed to delete file'
+            })
         })
     },
     listModalPromo: async (req, res) => {
         dataModalPromo = await ModalPromo.find(req.body)
-        res.send({
+        res.json({
             status: 200,
             error: null,
-            response: dataModalPromo
+            response: dataSlider
         })
     }
 }

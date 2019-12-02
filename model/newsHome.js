@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 
-const News = new Schema ({
+const newsHome = new Schema ({
     nm_news: {
         type: String
     },
@@ -21,3 +21,5 @@ const News = new Schema ({
 }, {
     timestamps: true
 })
+
+module.exports = mongoose.model('NewsHome', newsHome)

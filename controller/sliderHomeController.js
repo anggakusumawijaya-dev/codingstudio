@@ -11,8 +11,7 @@ module.exports = {
             })
         } else {
             // Use the name of the input field (i.e. "img_slider") to retrieve the uploaded file
-            let { img_slider } = req.files
-            
+            let { img_slider } = req.files          
             // Use the mv() method to place the file in upload directory (i.e. "uploads")
             img_slider.mv('./public/images/sliders/' + img_slider.name)
             const slider = new Slider ({
@@ -21,7 +20,6 @@ module.exports = {
                 status_slider: req.body.status_slider,
             })
             const savedSlider = await slider.save()
-
             // Send response
             res.send({
                 status: 201,
@@ -49,7 +47,7 @@ module.exports = {
         .then ( async sliderHome => {
             if (!sliderHome) {
                 res.status(200)
-                .json({ error: 'Data tidak di temukan'})
+                .json({ error: 'Data not found'})
             } else {
                 if (req.files) {
                     let { img_slider } = req.files
@@ -66,20 +64,28 @@ module.exports = {
                                 status_slider : req.body.status_slider
                             }
                             const updatedSlider = await Slider.updateOne({_id: id}, updSlider)
-                            res.send({
-                                status: 200,
-                                message: 'File is updated'
-                            })
                         }
                     })
                 } else {
-                    const updatedSlider = await Slider.updateOne({_id: id}, req.body)
-                    res.send({
-                        status: 200,
-                        message: 'File is updated'
-                    })
+                    const updSlider = {
+                        nm_slider : req.body.nm_slider,
+                        status_slider : req.body.status_slider
+                    }
+                    const updatedSlider = await Slider.updateOne({_id: id}, updSlider)
                 }
             }
+        })
+        .then(result => {
+            res.json({
+                status: 200,
+                message: 'File is updated'
+            })
+        })
+        .catch(err => {
+            res.json({
+                status: 400,
+                error: 'Failed to update file'
+            })
         })
     },
     deleteSlider: async (req, res) => {
@@ -87,28 +93,32 @@ module.exports = {
         Slider.findById(id)
         .then( async sliderHome => {
             if (!sliderHome) {
-                res.status(200)
-                .json({ error: 'File tidak di temukan'})
+                res.json({ 
+                    status: 404,
+                    error: 'Not Found'
+                })
             } else {
                 clearImage(sliderHome.img_slider)
                 const deletedSlider = await Slider.findByIdAndRemove(id)
             }
         })
         .then(result => {
-            res.send({
+            res.json({
                 status: 200,
                 error: null,
                 message: 'File is deleted'
             })
         })
         .catch(err => {
-            res.status(200)
-            .json({ error: 'Failed to delete file'})
+            res.json({
+                status: 400,
+                error: 'Failed to delete file'
+            })
         })
     },
     listSlider: async (req, res) => {
         dataSlider = await Slider.find(req.body)
-        res.send({
+        res.json({
             status: 200,
             error: null,
             response: dataSlider
