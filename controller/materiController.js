@@ -11,7 +11,7 @@ module.exports = {
             })
         } else {
             let { img_materi } = req.files          
-            img_materi.mv('./public/images/sliders/' + img_slider.name)
+            img_materi.mv('./public/images/materi/' + img_materi.name)
             const materi = new Materi ({
                 nm_materi: req.body.nm_materi,
                 img_materi: img_materi.name,
