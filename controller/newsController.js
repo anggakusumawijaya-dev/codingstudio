@@ -46,8 +46,10 @@ module.exports = {
         News.findById(id)
         .then ( async newsHome => {
             if (!newsHome) {
-                res.status(200)
-                .json({ error: 'Data not found'})
+                res.send({
+                    status: 404,
+                    error: 'Data not found'
+                })
             } else {
                 if (req.files) {
                     let { img_news } = req.files
@@ -79,13 +81,13 @@ module.exports = {
             }
         })
         .then(result => {
-            res.json({
+            res.send({
                 status: 200,
                 message: 'File is updated'
             })
         })
         .catch(err => {
-            res.json({
+            res.send({
                 status: 400,
                 error: 'Bad request'
             })
@@ -96,7 +98,7 @@ module.exports = {
         News.findById(id)
         .then( async newsHome => {
             if (!newsHome) {
-                res.json({
+                res.send({
                     status: 404,
                     error: 'Not Found'
                 })
@@ -106,14 +108,14 @@ module.exports = {
             }
         })
         .then(result => {
-            res.json({
+            res.send({
                 status: 200,
                 error: null,
                 message: 'File is deleted'
             })
         })
         .catch(err => {
-            res.json({
+            res.send({
                 status: 400,
                 error: 'Failed to delete file'
             })
@@ -121,7 +123,7 @@ module.exports = {
     },
     listNews: async (req, res) => {
         dataNews = await News.find(req.body)
-        res.json({
+        res.send({
             status: 200,
             error: null,
             response: dataNews

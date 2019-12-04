@@ -34,7 +34,8 @@ module.exports = {
         }
     },
     detailSlider: async (req, res) => {
-        const slider = await Slider.findById(req.params.id)
+        const { id } = req.params
+        const slider = await Slider.findById(id)
         res.send({
             status: 200,
             error: null,
@@ -44,16 +45,17 @@ module.exports = {
     updateSlider: async (req,res) => {
         const { id } = req.params
         Slider.findById(id)
-        .then ( async sliderHome => {
+        .then( async sliderHome => {
             if (!sliderHome) {
-                res.status(200)
-                .json({ error: 'Data not found'})
+                res.send({
+                    status: 404,
+                    error: 'Data not found'
+                })
             } else {
                 if (req.files) {
                     let { img_slider } = req.files
                     let path = `./public/images/sliders/${img_slider.name}`
                     clearImage(sliderHome.img_slider)
-
                     img_slider.mv(path, async (err) => {
                         if (err) {
                             console.log(err)
@@ -76,13 +78,13 @@ module.exports = {
             }
         })
         .then(result => {
-            res.json({
+            res.send({
                 status: 200,
                 message: 'File is updated'
             })
         })
         .catch(err => {
-            res.json({
+            res.send({
                 status: 400,
                 error: 'Failed to update file'
             })
@@ -93,7 +95,7 @@ module.exports = {
         Slider.findById(id)
         .then( async sliderHome => {
             if (!sliderHome) {
-                res.json({ 
+                res.send({ 
                     status: 404,
                     error: 'Not Found'
                 })
@@ -103,14 +105,14 @@ module.exports = {
             }
         })
         .then(result => {
-            res.json({
+            res.send({
                 status: 200,
                 error: null,
                 message: 'File is deleted'
             })
         })
         .catch(err => {
-            res.json({
+            res.send({
                 status: 400,
                 error: 'Failed to delete file'
             })
@@ -118,7 +120,7 @@ module.exports = {
     },
     listSlider: async (req, res) => {
         dataSlider = await Slider.find(req.body)
-        res.json({
+        res.send({
             status: 200,
             error: null,
             response: dataSlider

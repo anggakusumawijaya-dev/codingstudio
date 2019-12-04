@@ -1,14 +1,14 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 
-const sliderHome = new Schema ({
-    nm_slider: {
+const sliderSponsorHome = new Schema ({
+    nm_sponsor: {
         type: String
     },
-    img_slider: {
+    img_sponsor: {
         type: String
     },
-    status_slider: {
+    status_sponsor: {
         type: Boolean,
         default: true
     }
@@ -16,4 +16,4 @@ const sliderHome = new Schema ({
     timestamps: true
 })
 
-module.exports = mongoose.model('Slider', sliderHome)
+module.exports = mongoose.model('SliderSponsor', sliderSponsorHome)

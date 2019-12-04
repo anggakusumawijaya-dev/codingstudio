@@ -43,8 +43,10 @@ module.exports = {
         ModalPromo.findById(id)
         .then( async modalPromoHome => {
             if(!modalPromoHome) {
-                res.status(200)
-                .json({ error: 'File tidak di temukan'})
+                res.send({
+                    status: 404,
+                    error: 'Data not found'
+                })
             } else {
                 if(req.files) {
                     let { img_promo } = req.files
@@ -73,13 +75,13 @@ module.exports = {
             }
         })
         .then(result => {
-            res.json({
+            res.send({
                 status: 200,
                 message: 'File is updated'
             })
         })
         .catch(err => {
-            res.json({
+            res.send({
                 status: 400,
                 error: 'Failed to update file'
             })
@@ -90,9 +92,9 @@ module.exports = {
         ModalPromo.findById(id)
         .then( async modalPromoHome => {
             if(!modalPromoHome) {
-                res.json({ 
+                res.send({ 
                     status: 404,
-                    error: 'Not Found'
+                    error: 'File not found'
                 })
             } else {
                 clearImage(modalPromoHome.img_promo)
@@ -100,14 +102,14 @@ module.exports = {
             }
         })
         .then(result => {
-            res.json({
+            res.send({
                 status: 200,
                 error: null,
                 message: 'File is deleted'
             })
         })
         .catch(err => {
-            res.json({
+            res.send({
                 status: 400,
                 error: 'Failed to delete file'
             })
@@ -115,7 +117,7 @@ module.exports = {
     },
     listModalPromo: async (req, res) => {
         dataModalPromo = await ModalPromo.find(req.body)
-        res.json({
+        res.send({
             status: 200,
             error: null,
             response: dataSlider

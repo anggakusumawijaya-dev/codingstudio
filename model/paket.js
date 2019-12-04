@@ -1,20 +1,20 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 
-const materi = new Schema ({
-    nm_materi: {
+const paket = new Schema ({
+    nm_paket: {
         type: String
     },
-    img_materi: {
+    img_paket: {
         type: String
     },
-    desc_materi: {
+    desc_paket: {
         type: String
     },
-    hrg_materi: {
+    hrg_paket: {
         type: Number
     },
-    status_materi: {
+    status_paket: {
         type: Boolean,
         default: true
     }
@@ -22,4 +22,4 @@ const materi = new Schema ({
     timestamps: true
 })
 
-module.exports = mongoose.model('Materi', materi)
+module.exports = mongoose.model('Paket', paket)
