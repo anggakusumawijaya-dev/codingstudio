@@ -1,88 +1,43 @@
-const fs = require('fs')
-const path = require('path')
 const ModalPromo = require('../model/modalPromoHome')
 
 module.exports = {
     addModalPromo: async (req, res) => {
-        if(!req.files) {
-            res.send({
-                status: false,
-                message: 'No file uploaded'
-            })
-        } else {
-            let { img_promo } = req.files
-            img_promo.mv('./public/images/promo/' + img_promo.name)
-            const modalPromo = new ModalPromo ({
-                nm_promo: req.body.nm_promo,
-                img_promo: img_promo.name,
-                status_promo: req.body.status_promo
-            })
-            const savedModalPromo = await modalPromo.save()
-            res.send({
-                status: 201,
-                message: 'File is uploaded',
-                data_img: {
-                    name: img_promo.name,
-                    mimetype: img_promo.mimetype,
-                    size: img_promo.size
-                },
-                response: modalPromo
-            })
-        }
+        const addModalPromo = await ModalPromo.create(req.body)
+        res.status(201).json({
+            error: null,
+            message: 'Successfully saved file',
+            response: addModalPromo
+        })
     },
     detailModalPromo: async (req, res) => {
-        const modalPromo = await ModalPromo.findById(req.params.id)
-        res.send({
-            status: 200,
+        const { id } = req.params
+        const detailModalPromo = await ModalPromo.findById(id)
+        res.status(200).json({
             error: null,
-            response: modalPromo
+            message: 'Successfully retrieve file',
+            response: detailModalPromo
         })
     },
     updateModalPromo: async (req, res) => {
         const { id } = req.params
         ModalPromo.findById(id)
-        .then( async modalPromoHome => {
-            if(!modalPromoHome) {
-                res.send({
-                    status: 404,
-                    error: 'Data not found'
+        .then(async modalPromo => {
+            if (!modalPromo) {
+                res.status(404).json({
+                    message: 'Data not found'
                 })
             } else {
-                if(req.files) {
-                    let { img_promo } = req.files
-                    let path = './public/images/promo/' + img_promo.name
-                    clearImage(modalPromoHome.img_promo)
-
-                    img_promo.mv(path, async (err) => {
-                        if(err) {
-                            console.log(err)
-                        } else {
-                            const updModalPromo = {
-                                nm_promo: req.body.nm_promo,
-                                img_promo: img_promo.name,
-                                status_promo: req.body.status_promo
-                            }
-                            const updatedModalPromo = await ModalPromo.updateOne({_id: id}, updModalPromo)
-                        }
-                    })
-                } else {
-                    const updModalPromo = {
-                        nm_promo: req.body.nm_promo,
-                        status_promo: req.body.status_promo
-                    }
-                    const updatedModalPromo = await ModalPromo.updateOne({_id: id}, updModalPromo)
-                }
+                const updatedModalPromo = await ModalPromo.updateOne(req.body)
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
-                message: 'File is updated'
+            res.status(200).json({
+                error: null,
+                message: 'Successfully update file',
             })
         })
         .catch(err => {
-            res.send({
-                status: 400,
+            res.status(400).json({
                 error: 'Failed to update file'
             })
         })
@@ -92,41 +47,31 @@ module.exports = {
         ModalPromo.findById(id)
         .then( async modalPromoHome => {
             if(!modalPromoHome) {
-                res.send({ 
-                    status: 404,
+                res.status(404).json({
                     error: 'File not found'
                 })
             } else {
-                clearImage(modalPromoHome.img_promo)
                 const deletedModalPromo = await ModalPromo.findByIdAndRemove(id)
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
+            res.status(200).json({
                 error: null,
                 message: 'File is deleted'
             })
         })
         .catch(err => {
-            res.send({
-                status: 400,
+            res.status(400).json({
                 error: 'Failed to delete file'
             })
         })
     },
     listModalPromo: async (req, res) => {
-        dataModalPromo = await ModalPromo.find(req.body)
-        res.send({
-            status: 200,
+        const dataModalPromo = await ModalPromo.find()
+        res.status(200).json({
             error: null,
-            response: dataSlider
+            message: 'Successfully retrieve file',
+            response: dataModalPromo
         })
     }
-}
-const clearImage = filePath => {
-    filePath = path.join(__dirname, '../public/images/promo', filePath)
-    fs.unlink(filePath, err => {
-        if (err) throw err
-    })
 }

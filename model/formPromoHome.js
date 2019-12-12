@@ -19,7 +19,7 @@ const formPromoHome = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Materi'
     },
-    status: {
+    status_form_promo: {
         type: Boolean,
         default: true
     }

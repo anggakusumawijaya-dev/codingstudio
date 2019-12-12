@@ -11,6 +11,10 @@ const paket = new Schema ({
     desc_paket: {
         type: String
     },
+    list_materi: {
+        type: Schema.Types.ObjectId,
+        ref: 'Materi'
+    },
     hrg_paket: {
         type: Number
     },

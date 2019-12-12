@@ -1,44 +1,53 @@
-const fs = require('fs')
-const path = require('path')
 const Contact = require('../model/contact')
 
 module.exports = {
     addContact: async (req, res) => {
-        if (!req.files) {
-            res.send({
-                status: false,
-                message: 'No data received'
-            })
-        } else {
-            const contact = new Contact ({
-                nm_kontak: req.body.nm_kontak,
-                email_contact: req.body.email_contact,
-                msg_contact: req.body.msg_contact
-            })
-            const savedContact = await contact.save()
-            res.send({
-                status: 201,
-                message: 'Data received',
-                response: contact
-            })
-        }
+        const addContact = await Contact.create(req.body)
+        res.status(201).json({
+            error: null,
+            message: 'Successfully saved data',
+            response: addContact
+        })
     },
     detailContact: async (req, res) => {
         const { id } = req.params
-        const contact = await Contact.findById(id)
-        res.send({
-            status: 200,
+        const detailContact = await Contact.findById(id)
+        res.status(200).json({
             error: null,
-            response: contact
+            message: 'Successfully retrieve data',
+            response: detailContact
+        })
+    },
+    updateContact: async (req, res) => {
+        const { id } = req.params
+        Contact.findById(id)
+        .then(async contact => {
+            if (!contact) {
+                res.status(404).json({
+                    message: 'Data not found'
+                })
+            } else {
+                const updatedContact = await Contact.updateOne(req.body)
+            }
+        })
+        .then(result => {
+            res.status(200).json({
+                error: null,
+                message: 'Successfully update data'
+            })
+        })
+        .catch(err => {
+            res.status(400).json({
+                error: 'Failed to update data'
+            })
         })
     },
     deleteContact: async (req, res) => {
         const { id } = req.params
         Contact.findById(id)
-        .then( async contact => {
+        .then(async contact => {
             if (!contact) {
-                res.send({
-                    status: 404,
+                res.status(200).json({
                     error: 'Data not found'
                 })
             } else {
@@ -46,25 +55,23 @@ module.exports = {
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
+            res.status(200).json({
                 error: null,
                 message: 'Data is deleted'
             })
         })
         .catch(err => {
-            res.send({
-                status: 400,
+            res.status(400).json({
                 error: 'Failed to delete data'
             })
         })
     },
     listContact: async (req, res) => {
-        dataContact = await Contact.find(req.body)
-        res.send({
-            status: 200,
+        const listContact = await Contact.find()
+        res.status(200).json({
             error: null,
-            response: dataContact
+            message: 'Successfully retrieve data',
+            response: listContact
         })
     }
 }

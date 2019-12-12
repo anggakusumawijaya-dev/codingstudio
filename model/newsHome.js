@@ -11,7 +11,7 @@ const newsHome = new Schema ({
     desc_news: {
         type: String
     },
-    author: {
+    author_news: {
         type: String
     },
     status_news: {

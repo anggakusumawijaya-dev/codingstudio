@@ -1,136 +1,78 @@
-const fs = require('fs')
-const path = require('path')
 const Slider = require('../model/sliderHome')
 
 module.exports = {
     addSlider: async (req, res) => {
-        if(!req.files) {
-            res.send({
-                status: false,
-                message: 'No file uploaded'
-            })
-        } else {
-            // Use the name of the input field (i.e. "img_slider") to retrieve the uploaded file
-            let { img_slider } = req.files          
-            // Use the mv() method to place the file in upload directory (i.e. "uploads")
-            img_slider.mv('./public/images/sliders/' + img_slider.name)
-            const slider = new Slider ({
-                nm_slider: req.body.nm_slider,
-                img_slider: img_slider.name,
-                status_slider: req.body.status_slider,
-            })
-            const savedSlider = await slider.save()
-            // Send response
-            res.send({
-                status: 201,
-                message: 'File is uploaded',
-                data_img: {
-                    name: img_slider.name,
-                    mimetype: img_slider.mimetype,
-                    size: img_slider.size
-                },
-                response: slider
-            })
-        }
+        const addSlider = await Slider.create(req.body)
+        res.status(201).json({
+            error: null,
+            message: 'Successfully upload file',
+            response: addSlider
+        })
     },
     detailSlider: async (req, res) => {
         const { id } = req.params
-        const slider = await Slider.findById(id)
-        res.send({
-            status: 200,
+        const detailSlider = await Slider.findById(id)
+        res.status(200).json({
             error: null,
-            response: slider
+            message: 'Successfully retrieve data',
+            response: detailSlider
         })
     },
     updateSlider: async (req,res) => {
         const { id } = req.params
         Slider.findById(id)
-        .then( async sliderHome => {
-            if (!sliderHome) {
-                res.send({
-                    status: 404,
-                    error: 'Data not found'
+        .then(async slider => {
+            if (!slider) {
+                res.status(400).json({
+                    message: 'Data not found'
                 })
             } else {
-                if (req.files) {
-                    let { img_slider } = req.files
-                    let path = `./public/images/sliders/${img_slider.name}`
-                    clearImage(sliderHome.img_slider)
-                    img_slider.mv(path, async (err) => {
-                        if (err) {
-                            console.log(err)
-                        } else {
-                            const updSlider = {
-                                nm_slider : req.body.nm_slider,
-                                img_slider : img_slider.name,
-                                status_slider : req.body.status_slider
-                            }
-                            const updatedSlider = await Slider.updateOne({_id: id}, updSlider)
-                        }
-                    })
-                } else {
-                    const updSlider = {
-                        nm_slider : req.body.nm_slider,
-                        status_slider : req.body.status_slider
-                    }
-                    const updatedSlider = await Slider.updateOne({_id: id}, updSlider)
-                }
+                const updatedSlider = await Slider.updateOne(req.body)
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
-                message: 'File is updated'
+            res.status(200).json({
+                error: null,
+                message: 'Successfully update data'
             })
         })
         .catch(err => {
-            res.send({
-                status: 400,
-                error: 'Failed to update file'
+            res.status(400).json({
+                error: 'Failed to update data'
             })
         })
     },
     deleteSlider: async (req, res) => {
         const { id } = req.params
         Slider.findById(id)
-        .then( async sliderHome => {
-            if (!sliderHome) {
-                res.send({ 
-                    status: 404,
-                    error: 'Not Found'
+        .then( async slider => {
+            if (!slider) {
+                res.status(404).json({
+                    error: 'File not found'
                 })
             } else {
-                clearImage(sliderHome.img_slider)
-                const deletedSlider = await Slider.findByIdAndRemove(id)
+                const deleteSlider = await Slider.findByIdAndRemove(id)
+                
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
+            res.status(200).json({
                 error: null,
-                message: 'File is deleted'
+                message: 'Successfully delete a file'
             })
         })
-        .catch(err => {
-            res.send({
-                status: 400,
+        .catch(er => {
+            res.status(400).json({
                 error: 'Failed to delete file'
             })
         })
     },
     listSlider: async (req, res) => {
-        dataSlider = await Slider.find(req.body)
-        res.send({
-            status: 200,
+        const listSlider = await Slider.find()
+        res.status(200).json({
             error: null,
-            response: dataSlider
+            message: 'Successfully retrieve data',
+            response: listSlider
         })
     }
-}
-
-const clearImage = filePath => {
-    filePath = path.join(__dirname, '../public/images/sliders/', filePath)
-    fs.unlink(filePath, err => {
-        if (err) throw err
-    })
 }

@@ -1,95 +1,42 @@
-const fs = require('fs')
-const path = require('path')
 const Materi = require('../model/materi')
 
 module.exports = {
     addMateri: async (req, res) => {
-        if(!req.files) {
-            res.send({
-                status: false,
-                message: 'No file uploaded'
-            })
-        } else {
-            let { img_materi } = req.files          
-            img_materi.mv('./public/images/materi/' + img_materi.name)
-            const materi = new Materi ({
-                nm_materi: req.body.nm_materi,
-                img_materi: img_materi.name,
-                desc_materi: req.body.desc_materi,
-                hrg_materi: req.body.hrg_materi,
-                status_materi: req.body.status_materi
-            })
-            const savedMateri = await materi.save() 
-            res.send({
-                status: 201,
-                message: 'File is uploaded',
-                data_img: {
-                    name: img_materi.name,
-                    mimetype: img_materi.mimetype,
-                    size: img_materi.size
-                },
-                response: materi
-            })
-        }
+        const addMateri = await Materi.create(req.body)
+        res.status(201).json({
+            error: null,
+            message: 'Successfully saved data',
+            response: addMateri
+        })
     },
     detailMateri: async (req, res) => {
         const { id } = req.params
-        const materi = await Materi.findById(id)
-        res.send({
-            status: 200,
+        const detailMateri = await Materi.findById(id)
+        res.status(200).json({
             error: null,
-            response: materi
+            message: 'Successfully retrieve data',
+            response: detailMateri
         })
     },
     updateMateri: async (req,res) => {
         const { id } = req.params
         Materi.findById(id)
-        .then( async materiHome => {
-            if (!materiHome) {
-                res.send({
-                    status: 404,
-                    error: 'Data not found'
+        .then(async materi => {
+            if (!materi) {
+                res.status(404).json({
+                    message: 'Data not found'
                 })
             } else {
-                if (req.files) {
-                    let { img_materi } = req.files
-                    let path = `./public/images/materi/${img_materi.name}`
-                    clearImage(materiHome.img_materi)
-                    img_materi.mv(path, async (err) => {
-                        if (err) {
-                            console.log(err)
-                        } else {
-                            const updMateri = {
-                                nm_materi: req.body.nm_materi,
-                                img_materi: img_materi.name,
-                                desc_materi: req.body.desc_materi,
-                                hrg_materi: req.body.hrg_materi,
-                                status_materi: req.body.status_materi
-                            }
-                            const updatedMateri = await Materi.updateOne({_id: id}, updMateri)
-                        }
-                    })
-                } else {
-                    const updMateri = {
-                        nm_materi : req.body.nm_materi,
-                        status_materi : req.body.status_materi,
-                        desc_materi: req.body.desc_materi,
-                        hrg_materi: req.body.hrg_materi,
-                        status_materi: req.body.status_materi
-                    }
-                    const updatedMateri = await Materi.updateOne({_id: id}, updMateri)
-                }
+                const updatedMateri = await Materi.updateOne(req.body)
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
+            res.status(200).json({
                 message: 'File is updated'
             })
         })
         .catch(err => {
-            res.send({
-                status: 400,
+            res.status(400).json({
                 error: 'Failed to update file'
             })
         })
@@ -97,44 +44,33 @@ module.exports = {
     deleteMateri: async (req, res) => {
         const { id } = req.params
         Materi.findById(id)
-        .then( async materiHome => {
+        .then(async materiHome => {
             if (!materiHome) {
-                res.send({ 
-                    status: 404,
-                    error: 'Not Found'
+                res.status(404).json({
+                    error: 'File not found'
                 })
             } else {
-                clearImage(materiHome.img_materi)
                 const deletedMateri = await Materi.findByIdAndRemove(id)
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
+            res.status(200).json({
                 error: null,
                 message: 'File is deleted'
             })
         })
-        .catch(err => {
-            res.send({
-                status: 400,
+        .catch(er => {
+            res.status(400).json({
                 error: 'Failed to delete file'
             })
         })
     },
     listMateri: async (req, res) => {
-        dataMateri = await Materi.find(req.body)
-        res.send({
-            status: 200,
+        const dataMateri = await Materi.find()
+        res.status(200).json({
             error: null,
+            message: 'Successfully retrieve data',
             response: dataMateri
         })
     }
-}
-
-const clearImage = filePath => {
-    filePath = path.join(__dirname, '../public/images/materi/', filePath)
-    fs.unlink(filePath, err => {
-        if (err) throw err
-    })
 }

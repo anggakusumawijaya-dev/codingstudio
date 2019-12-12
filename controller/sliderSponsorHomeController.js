@@ -1,133 +1,79 @@
-const fs = require('fs')
-const path = require('path')
 const Sponsor = require('../model/sliderSponsorHome')
 
 module.exports = {
     addSponsor: async (req, res) => {
-        if (!req.files) {
-            res.send({
-                status: false,
-                message: 'No file uploaded'
-            })
-        } else {
-            let { img_sponsor } = req.files
-            img_sponsor.mv(`./public/images/sponsor/${img_sponsor.name}`)
-            const sponsor = new Sponsor ({
-                nm_sponsor: req.body.nm_sponsor,
-                img_sponsor: img_sponsor.name,
-                status_sponsor: req.body.status_sponsor
-            })
-            const savedSponsor = await sponsor.save()
-            res.send({
-                status: 201,
-                message: 'File is uploaded',
-                data_img: {
-                    name: img_sponsor.name,
-                    mimetype: img_sponsor.mimetype,
-                    size: img_sponsor.size
-                },
-                response: sponsor
-            })
-        }
+        const addSponsor = await Sponsor.create(req.body)
+        res.status(201).json({
+            error: null,
+            message: 'Successfully upload a file',
+            response: addSponsor
+        })
     },
     detailSponsor: async (req, res) => {
-        const sponsor = await Sponsor.findById(req.params.id)
-        res.send({
-            status: 200,
+        const { id } = req.params
+        const detailSponsor = await Sponsor.findById(id)
+        res.status(200).json({
             error: null,
-            response: sponsor
+            response: detailSponsor
             
         })
     },
     updateSponsor: async (req, res) => {
         const { id } = req.params
         Sponsor.findById(id)
-        .then( async sponsorHome => {
-            if (!sponsorHome) {
-                res.send({
-                    status: 404,
-                    error: 'Data not found'
+        .then(async sponsor => {
+            if (!sponsor) {
+                res.status(404).json({
+                    message: 'File not found'
                 })
             } else {
-                if (req.files) {
-                    let { img_sponsor } = req.files
-                    let path = `./public/images/sponsor/${img_sponsor.name}`
-                    clearImage(sponsorHome.img_sponsor)
-                    img_sponsor.mv(path, async (err) => {
-                        if (err) {
-                            console.log(err)
-                        } else {
-                            const updSponsor = {
-                                nm_sponsor: req.body.nm_sponsor,
-                                img_sponsor: img_sponsor.name,
-                                status_sponsor: req.body.status_sponsor
-                            }
-                            const updatedSponsor = await Sponsor.updateOne({ _id: id }, updSponsor)
-                        }
-                    })
-                } else {
-                    const updSponsor = {
-                        nm_sponsor: req.body.nm_sponsor,
-                        status_sponsor: req.body.status_sponsor
-                    }
-                    const updatedSponsor = await Sponsor.updateOne({ _id: id }, updSponsor)
-                }
+                const deleteSponsor = await Sponsor.updateOne(req.body)
+                
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
-                message: 'File is updated'
+            res.status(200).json({
+                error: null,
+                message: 'Successfully update file'
             })
         })
-        .catch(err => {
-            res.send({
-                status: 400,
+        .catch(er => {
+            res.status(400).json({
                 error: 'Failed to update file'
             })
         })
     },
-    delete: async (req, res) => {
+    deleteSponsor: async (req, res) => {
         const { id } = req.params
         Sponsor.findById(id)
-        .then( async sponsorHome => {
-            if (!sponsorHome) {
-                res.send({
-                    status: 404,
-                    error: 'Not found'
+        .then(async sponsor => {
+            if (!sponsor) {
+                res.status(404).json({
+                    error: 'File not found'
                 })
             } else {
-                clearImage(sponsorHome.img_sponsor)
-                const deletedSponsor = await Sponsor.findByIdAndRemove(id)
+                const deleteSponsor = await Sponsor.findByIdAndRemove(id)
+                
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
+            res.status(200).json({
                 error: null,
-                message: 'File is deleted'
+                message: 'Successfully delete file'
             })
         })
-        .catch(err => {
-            res.send({
-                status: 400,
+        .catch(er => {
+            res.status(400).json({
                 error: 'Failed to delete file'
             })
         })
     },
     listSponsor: async (req, res) => {
-        dataSponsor = await Sponsor.find(req.body)
-        res.send({
-            status: 200,
+        const dataSponsor = await Sponsor.find(req.body)
+        res.status(200).json({
             error: null,
+            message: 'Successfully retrieve file',
             response: dataSponsor
         })
     }
-}
-
-const clearImage = filePath => {
-    filePath = path.join(__dirname, '../public/images/sponsor/', filePath)
-    fs.unlink(filePath, err => {
-        if (err) throw err
-    })
 }

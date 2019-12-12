@@ -1,139 +1,77 @@
-const fs = require('fs')
-const path = require('path')
 const News = require('../model/newsHome')
 
 module.exports = {
     addNews: async (req, res) => {
-        if(!req.files) {
-            res.send({
-                status: false,
-                message: 'No file uploaded'
-            })
-        } else {
-            let { img_news } = req.files
-            img_news.mv('./public/images/news' + img_news.name)
-            const news = new News ({
-                nm_news: req.body.nm_news,
-                img_news: img_news.name,
-                desc_news: req.body.desc_news,
-                author: req.body.author,
-                status_news: req.body.status_news
-            })
-            const savedNews = await news.save()
-            res.send({
-                status: 201,
-                message: 'File is uploaded',
-                data_img: {
-                    name: img_news.name,
-                    mimetype: img_news.mimetype,
-                    size: img_news.size
-                },
-                response: news
-            })
-        }
+        const addNews = await News.create(req.body)
+        res.status(201).json({
+            error: null,
+            message: 'Successfully',
+            response: addNews
+        })
     },
     detailNews: async (req, res) => {
-        const news = await News.findById(req.params.id)
-        res.send({
-            status: 200,
+        const { id } = req.params
+        const detailNews = await News.findById(id)
+        res.status(200).json({
             error: null,
-            response: news
-            
+            message: 'Successfully retrieve data',
+            response: detailNews
         })
     },
     updateNews: async (req, res) => {
         const { id } = req.params
         News.findById(id)
-        .then ( async newsHome => {
-            if (!newsHome) {
-                res.send({
-                    status: 404,
-                    error: 'Data not found'
+        .then(async news => {
+            if (!news) {
+                res.status(400).json({
+                    message: 'Data not found'
                 })
             } else {
-                if (req.files) {
-                    let { img_news } = req.files
-                    let path = `./public/images/slider/${img_news.name}`
-                    clearImage(newsHome.img_news)
-                    img_news.mv(path, async (err) => {
-                        if (err) {
-                            console.log(err)
-                        } else {
-                            const updNews = {
-                                nm_news: req.body.nm_news,
-                                img_news: img_news.name,
-                                desc_news: req.body.desc_news,
-                                author: req.body.author,
-                                status_news: req.body.status_news
-                            }
-                            const updatedNews = await News.updateOne({ _id: id}, updNews)
-                        }
-                    })
-                } else {
-                    const updNews = {
-                        nm_news: req.body.nm_news,
-                        desc_news: req.body.desc_news,
-                        author: req.body.author,
-                        status_news: req.body.status_news
-                    }
-                    const updatedNews = await News.updateOne({ _id: id}, updNews)
-                }
+                const updatedNews = await News.updateOne(req.body)
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
-                message: 'File is updated'
+            res.status(200).json({
+                error: null,
+                message: 'Successfully update data'
             })
         })
         .catch(err => {
-            res.send({
-                status: 400,
-                error: 'Bad request'
+            res.status(400).json({
+                error: 'Failed to update data'
             })
         })
     },
     deleteNews: async (req, res) => {
         const { id } = req.params
         News.findById(id)
-        .then( async newsHome => {
-            if (!newsHome) {
-                res.send({
-                    status: 404,
-                    error: 'Not Found'
+        .then(async news => {
+            if (!news) {
+                res.status(404).json({
+                    error: 'Data not found'
                 })
             } else {
-                clearImage(newsHome.img_news)
-                const deletedNews = await News.findByIdAndRemove(id)
+                const deleteNews = await News.findByIdAndRemove(id)
             }
         })
         .then(result => {
-            res.send({
-                status: 200,
+            res.status(200).json({
                 error: null,
-                message: 'File is deleted'
+                message: 'Data is deleted'
             })
         })
         .catch(err => {
-            res.send({
-                status: 400,
-                error: 'Failed to delete file'
+            res.status(400).json({
+                error: 'Failed to delete data'
             })
         })
     },
     listNews: async (req, res) => {
-        dataNews = await News.find(req.body)
-        res.send({
-            status: 200,
+        const listNews = await News.find()
+        res.status(200).json({
             error: null,
-            response: dataNews
+            message: 'Successfully retrieve data',
+            response: listNews
         })
     }
-}
-
-const clearImage = filePath => {
-    filePath = path.join(__dirname, '../public/images/news', filePath)
-    fs.unlink(filePath, err => {
-        if (err) throw err
-    })
 }
